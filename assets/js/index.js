@@ -6,7 +6,7 @@ require([
   "esri/widgets/Legend",
   "esri/widgets/Expand",
   "esri/widgets/LayerList",
-  "esri/geometry/Extent",
+  "esri/geometry/Extent"
 ], function (
   Map,
   MapView,
@@ -15,25 +15,24 @@ require([
   Legend,
   Expand,
   LayerList,
-  Extent,
+  Extent
 ) {
+
   // ======================================
-  // MAP IMAGE LAYER (ALL SERVICE LAYERS)
+  // MAP IMAGE LAYER (DISPLAY ONLY)
   // ======================================
   const boundaryLayer = new MapImageLayer({
     url: "https://map3.urbanunit.gov.pk:6443/arcgis/rest/services/Punjab/PB_Pop_Blocks_Price_Violations_8432_23022026/MapServer",
-    title: "Layers",
-    popupEnabled: true,
+    title: "Administrative Layers",
 
-    popupTemplate: {
-      title: "Price Control Violation",
-      content: [
-        {
-          type: "fields",
-          fieldInfos: [{ fieldName: "*", visible: true }],
-        },
-      ],
-    },
+    // ⭐ renamed sublayers
+    sublayers: [
+      { id: 0, title: "District Boundaries", visible: true },
+      { id: 1, title: "Surveyed Shops", visible: true },
+      { id: 2, title: "Violations Blocks (Display)", visible: false }, // hidden (popup handled by FeatureLayer)
+      { id: 3, title: "Violations Blocks Shops", visible: true },
+      { id: 4, title: "Population Blocks", visible: true }
+    ]
   });
 
   // ======================================
@@ -44,16 +43,15 @@ require([
     outFields: ["*"],
     title: "Violations Counts BlockWise",
     popupEnabled: true,
+    labelsVisible: false,
 
     popupTemplate: {
       title: "Price Control Violation",
-      content: [
-        {
-          type: "fields",
-          fieldInfos: [{ fieldName: "*", visible: true }],
-        },
-      ],
-    },
+      content: [{
+        type: "fields",
+        fieldInfos: [{ fieldName: "*", visible: true }]
+      }]
+    }
   });
 
   // ======================================
@@ -61,7 +59,7 @@ require([
   // ======================================
   const map = new Map({
     basemap: "streets-navigation-vector",
-    layers: [boundaryLayer, violationsLayer],
+    layers: [boundaryLayer, violationsLayer]
   });
 
   // ======================================
@@ -77,22 +75,20 @@ require([
       dockEnabled: true,
       dockOptions: {
         buttonEnabled: true,
-        position: "top-right",
-      },
-    },
+        position: "top-right"
+      }
+    }
   });
 
   // ======================================
-  // DEBUG CLICK (POPUP TROUBLESHOOT)
+  // DEBUG CLICK (OPTIONAL)
   // ======================================
   view.on("click", function (event) {
-    console.log("🟢 Map clicked:", event.mapPoint);
 
     view.hitTest(event).then(function (response) {
-      console.log("🔵 HitTest response:", response);
 
       if (!response.results.length) {
-        console.log("❌ No feature detected");
+        console.log("No feature detected");
         return;
       }
 
@@ -101,104 +97,109 @@ require([
         console.log("Layer:", r.graphic.layer?.title);
         console.log("Attributes:", r.graphic.attributes);
       });
+
     });
+
   });
 
   // ======================================
   // LEGEND
   // ======================================
   const legend = new Legend({
-    view: view,
+    view: view
   });
 
   const legendExpand = new Expand({
     view: view,
     content: legend,
-    expanded: true,
+    expanded: true
   });
 
   view.ui.add(legendExpand, "top-right");
 
   // ======================================
-  // LAYER LIST (TOGGLE LAYERS)
+  // LAYER LIST
   // ======================================
   const layerList = new LayerList({
-    view: view,
+    view: view
   });
 
   const layerExpand = new Expand({
     view: view,
     content: layerList,
-    expanded: false,
+    expanded: false
   });
 
   view.ui.add(layerExpand, "top-left");
 
   // ======================================
-  // DISTRICT CHANGE → ZOOM + FILTER
+  // DISTRICT FILTER (ZOOM + FILTER)
   // ======================================
   document
     .getElementById("districtFilter")
     .addEventListener("change", function () {
+
       const districtId = this.value;
 
-      // reset filter
       if (!districtId) {
         violationsLayer.definitionExpression = null;
         view.goTo({
           center: [72.7097, 31.1704],
-          zoom: 6,
+          zoom: 6
         });
         return;
       }
 
       fetch(`services/get_district_extents.php?district_id=${districtId}`)
-        .then((res) => res.json())
-        .then((extent) => {
-          console.log("Extent:", extent);
+        .then(res => res.json())
+        .then(extent => {
 
-          // create REAL ArcGIS extent
           const districtExtent = new Extent({
             xmin: Number(extent.xmin),
             ymin: Number(extent.ymin),
             xmax: Number(extent.xmax),
             ymax: Number(extent.ymax),
-            spatialReference: { wkid: 4326 },
+            spatialReference: { wkid: 4326 }
           });
 
-          // zoom to district
           view.goTo(districtExtent.expand(1.2));
 
-          // FILTER layer (⚠ change field name if needed)
+          // ⚠ change field if needed
           violationsLayer.definitionExpression =
             "district_gid = " + Number(districtId);
+
         });
     });
 
   // ======================================
-  // LOAD DISTRICTS FROM API
+  // LOAD DISTRICTS
   // ======================================
   function loadDistricts() {
+
     fetch("services/get_districts.php")
-      .then((res) => res.json())
-      .then((data) => {
+      .then(res => res.json())
+      .then(data => {
+
         const select = document.getElementById("districtFilter");
 
         select.innerHTML = `<option value="">All Districts</option>`;
 
-        data.districts.forEach((item) => {
+        data.districts.forEach(item => {
+
           const option = document.createElement("option");
           option.value = item.gid;
           option.textContent = item.district_name;
 
           select.appendChild(option);
+
         });
+
       })
-      .catch((err) => {
+      .catch(err => {
         console.error("Error loading districts:", err);
       });
   }
 
-  // load dropdown on start
   loadDistricts();
+
 });
