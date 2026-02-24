@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Price Control Violation With Block</title>
+    <title>Price Control Violation BlockWise</title>
 
     <link rel="icon" href="public/gop_favicon.png" type="image/x-icon">
 
