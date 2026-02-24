@@ -1,10 +1,13 @@
 <?php
 
-$host = "172.20.82.84";
-$db   = "price_control_punjab";
-$user = "postgres";
-$pass = "diamondx";
-$port = "5432";
+// $host = "172.20.82.84";
+// $db   = "price_control_punjab";
+// $user = "postgres";
+// $pass = "diamondx";
+// $port = "5432";
+
+
+
 
 try {
     $conn = new PDO(
