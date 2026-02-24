@@ -7,12 +7,14 @@
 
     <title>Price Control Violation With Block</title>
 
+    <link rel="icon" href="public/gop_favicon.png" type="image/x-icon">
+
     <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <!-- Esri -->
     <link rel="stylesheet" href="https://js.arcgis.com/4.29/esri/themes/light/main.css">
-    <script src="https://js.arcgis.com/4.29/"></script>
+    
 
     <style>
         body {
@@ -55,8 +57,10 @@
     <!-- Map -->
     <div id="viewDiv"></div>
 
-    <!-- Footer -->
-     <script src="assets/js/index.js"></script>
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://js.arcgis.com/4.29/"></script>
+    <script src="assets/js/index.js"></script>
 
 </body>
 
