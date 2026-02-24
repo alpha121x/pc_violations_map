@@ -100,32 +100,61 @@ require([
 
   view.ui.add(layerExpand, "top-left");
 
-  // ===============================
-  // DISTRICT FILTER (ZOOM)
-  // ===============================
-  const districtLocations = {
-    lahore: [74.3587, 31.5204],
-    faisalabad: [73.0845, 31.4504],
-    multan: [71.5249, 30.1575],
-    rawalpindi: [73.0479, 33.6844],
-    gujranwala: [74.1871, 32.1617],
-  };
-
   document
     .getElementById("districtFilter")
     .addEventListener("change", function () {
-      const district = this.value;
+      const districtId = this.value;
 
-      if (district && districtLocations[district]) {
-        view.goTo({
-          center: districtLocations[district],
-          zoom: 10,
+      if (!districtId) return;
+
+      fetch(`services/get_district_extents.php?district_id=${districtId}`)
+        .then((res) => res.json())
+        .then((extent) => {
+          view.goTo({
+            target: {
+              xmin: parseFloat(extent.xmin),
+              ymin: parseFloat(extent.ymin),
+              xmax: parseFloat(extent.xmax),
+              ymax: parseFloat(extent.ymax),
+              spatialReference: { wkid: 4326 },
+            },
+          });
+
+          // FILTER violations layer by district
+          violationsLayer.definitionExpression = "district_gid = " + districtId;
         });
-      } else {
-        view.goTo({
-          center: [72.7097, 31.1704],
-          zoom: 7,
-        });
-      }
     });
+
+  // ======================================
+  // LOAD DISTRICTS FROM API
+  // ======================================
+  function loadDistricts() {
+    fetch("services/get_districts.php")
+      .then((res) => res.json())
+      .then((data) => {
+        const select = document.getElementById("districtFilter");
+
+        // reset dropdown
+        select.innerHTML = `<option value="">All Districts</option>`;
+
+        // LOOP districts array
+        data.districts.forEach((item) => {
+          const option = document.createElement("option");
+
+          // value = gid (BEST PRACTICE)
+          option.value = item.gid;
+
+          // text shown
+          option.textContent = item.district_name;
+
+          select.appendChild(option);
+        });
+      })
+      .catch((err) => {
+        console.error("Error loading districts:", err);
+      });
+  }
+
+  // call on page load
+  loadDistricts();
 });

@@ -14,7 +14,7 @@
 
     <!-- Esri -->
     <link rel="stylesheet" href="https://js.arcgis.com/4.29/esri/themes/light/main.css">
-    
+
 
     <style>
         body {
@@ -43,12 +43,7 @@
             </div>
             <div class="col-md-3 col-sm-6">
                 <select id="districtFilter" class="form-select">
-                    <option value="">All Districts</option>
-                    <option value="lahore">Lahore</option>
-                    <option value="faisalabad">Faisalabad</option>
-                    <option value="multan">Multan</option>
-                    <option value="rawalpindi">Rawalpindi</option>
-                    <option value="gujranwala">Gujranwala</option>
+                    <option value="">Loading districts...</option>
                 </select>
             </div>
         </div>
@@ -64,5 +59,9 @@
     <script src="assets/js/index.js"></script>
 
 </body>
+
+<script>
+   
+</script>
 
 </html>
