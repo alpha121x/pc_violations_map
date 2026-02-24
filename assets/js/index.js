@@ -32,7 +32,7 @@ require([
         view: view,
         layerInfos: [{
             layer: violationLayer,
-            title: "Price Control Violations"
+            title: "Price Control Violations BlockWise"
         }]
     });
 
