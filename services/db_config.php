@@ -7,6 +7,11 @@
 // $port = "5432";
 
 
+// $host = "localhost";
+// $db   = "db_cnw_rams";
+// $user = "postgres";
+// $pass = "diamondx";
+// $port = "5432";
 
 
 try {
