@@ -20,20 +20,18 @@ require([
   // ======================================
   // MAP IMAGE LAYER (ALL SERVICE LAYERS)
   // ======================================
+
   const boundaryLayer = new MapImageLayer({
     url: "https://map3.urbanunit.gov.pk:6443/arcgis/rest/services/Punjab/PB_Pop_Blocks_Price_Violations_8432_23022026/MapServer",
     title: "Layers",
-    popupEnabled: true,
 
-    popupTemplate: {
-      title: "Price Control Violation",
-      content: [
-        {
-          type: "fields",
-          fieldInfos: [{ fieldName: "*", visible: true }],
-        },
-      ],
-    },
+    sublayers: [
+      { id: 0, visible: true }, // Districts
+      { id: 1, visible: true }, // Surveyed Shops
+      { id: 2, visible: false }, // ⭐ VERY IMPORTANT (hide duplicate)
+      { id: 3, visible: true },
+      { id: 4, visible: true },
+    ],
   });
 
   // ======================================
