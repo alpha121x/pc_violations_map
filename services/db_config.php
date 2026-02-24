@@ -16,7 +16,7 @@ try {
         PDO::ATTR_EMULATE_PREPARES => false,
     ]);
 
-    echo "Connected successfully";
+    // echo "Connected successfully";
 
 } catch (PDOException $e) {
     die("Database connection failed: " . $e->getMessage());
