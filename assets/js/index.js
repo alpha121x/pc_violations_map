@@ -20,6 +20,7 @@ require([
   // ===============================
   const boundaryLayer = new MapImageLayer({
     url: "https://map3.urbanunit.gov.pk:6443/arcgis/rest/services/Punjab/PB_Pop_Blocks_Price_Violations_8432_23022026/MapServer",
+    title: "Layers",
   });
 
   // ===============================
@@ -29,6 +30,7 @@ require([
   const violationsLayer = new FeatureLayer({
     url: "https://map3.urbanunit.gov.pk:6443/arcgis/rest/services/Punjab/PB_Pop_Blocks_Price_Violations_8432_23022026/MapServer/2",
     outFields: ["*"],
+    title: "Violations Blocks",
     popupEnabled: true,
 
     popupTemplate: {
