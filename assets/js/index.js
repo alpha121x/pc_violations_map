@@ -187,7 +187,7 @@ require([
         data.districts.forEach(item => {
 
           const option = document.createElement("option");
-          option.value = item.district_id;
+          option.value = item.gid;
           option.textContent = item.district_name;
 
           select.appendChild(option);
