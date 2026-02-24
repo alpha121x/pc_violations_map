@@ -54,6 +54,7 @@
         </div>
     </div>
 
+
     <!-- Map -->
     <div id="viewDiv"></div>
 

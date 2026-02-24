@@ -126,43 +126,4 @@ require([
         });
       }
     });
-  // ===============================
-  // CLICK → OPEN POPUP MODAL
-  // ===============================
-  view.on("click", function (event) {
-    view.hitTest(event).then(function (response) {
-      // find clicked feature from violations layer
-      const result = response.results.find(
-        (r) => r.graphic && r.graphic.layer === violationsLayer,
-      );
-
-      if (result) {
-        const attrs = result.graphic.attributes;
-
-        // Build modal content (auto fields)
-        let html = "<table class='table table-bordered'>";
-
-        for (let key in attrs) {
-          html += `
-                    <tr>
-                        <th>${key}</th>
-                        <td>${attrs[key]}</td>
-                    </tr>
-                `;
-        }
-
-        html += "</table>";
-
-        // Inject into modal
-        document.getElementById("modalBody").innerHTML = html;
-
-        // Open Bootstrap modal
-        const modal = new bootstrap.Modal(
-          document.getElementById("featureModal"),
-        );
-
-        modal.show();
-      }
-    });
-  });
 });
