@@ -1,24 +1,23 @@
 <?php
 
-$host = "172.20.82.84";
-$db   = "price_control_punjab";
+$host = "localhost";
+$port = "5433";
+$dbname = "db_cnw_rams";   // make sure this database exists
 $user = "postgres";
-$pass = "diamondx";
-$port = "5432";
+$password = "1234";        // use the SAME password you used in pgAdmin
 
 try {
-    $conn = new PDO(
-        "pgsql:host=$host;port=$port;dbname=$db",
-        $user,
-        $pass
-    );
 
-    // Enable error mode (VERY IMPORTANT)
-    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $dsn = "pgsql:host=$host;port=$port;dbname=$dbname";
 
-    // echo "Database connection successful!";
+    $conn = new PDO($dsn, $user, $password, [
+        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+        PDO::ATTR_EMULATE_PREPARES => false,
+    ]);
 
-} catch(PDOException $e){
+    // echo "Connected successfully";
+
+} catch (PDOException $e) {
     die("Database connection failed: " . $e->getMessage());
 }
-?>

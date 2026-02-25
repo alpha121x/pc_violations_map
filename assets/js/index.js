@@ -150,7 +150,7 @@ require([
         return;
       }
 
-      fetch(`services/get_district_extents.php?district_id=${districtId}`)
+      fetch(`services/get_district_extent.php?district_id=${districtId}`)
         .then(res => res.json())
         .then(extent => {
 
