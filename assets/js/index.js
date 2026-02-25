@@ -29,7 +29,7 @@ require([
     sublayers: [
       { id: 0, title: "District Boundaries", visible: true },
       { id: 1, title: "Surveyed Shops", visible: true },
-      { id: 2, title: "Violations Blocks (Display)", visible: false }, // hidden (popup handled by FeatureLayer)
+      { id: 2, title: "Violations Blocks (Display)", visible: false },
       { id: 3, title: "Violations Blocks Shops", visible: true },
       { id: 4, title: "Population Blocks", visible: true }
     ]
