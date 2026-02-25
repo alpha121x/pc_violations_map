@@ -5,7 +5,7 @@ header('Content-Type: application/json');
 
 /* DISTRICTS */
 $districts = $conn->query("
-    SELECT gid, district_name
+    SELECT gid as district_id, district_name
     FROM food_security.tbl_districts
     ORDER BY district_name
 ")->fetchAll(PDO::FETCH_ASSOC);
