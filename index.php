@@ -55,17 +55,22 @@
         <h4 class="mb-0">Price Control Violation BlockWise</h4>
     </header>
 
-    <!-- Filter Bar -->
+    <!-- Filter Bar (CENTERED) -->
     <div class="container-fluid bg-light py-2 border-bottom">
-        <div class="row align-items-center">
+        <div class="row justify-content-center align-items-center">
+
             <div class="col-auto">
-                <label for="districtFilter" class="fw-bold mb-0">Select District:</label>
+                <label for="districtFilter" class="fw-bold mb-0">
+                    Select District:
+                </label>
             </div>
+
             <div class="col-md-3 col-sm-6">
                 <select id="districtFilter" class="form-select">
                     <option value="">Loading districts...</option>
                 </select>
             </div>
+
         </div>
     </div>
 
