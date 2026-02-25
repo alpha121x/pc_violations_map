@@ -15,7 +15,7 @@ require([
   Legend,
   Expand,
   LayerList,
-  Extent,
+  Extent
 ) {
   let selectedDate = "";
   let selectedDistrict = "";
@@ -32,10 +32,10 @@ require([
   }
 
   // =============================
-  // DISTRICT HIGHLIGHT
+  // DISTRICT HIGHLIGHT (Districts = id 2)
   // =============================
   const districtHighlightLayer = new FeatureLayer({
-    url: "https://map3.urbanunit.gov.pk:6443/arcgis/rest/services/Punjab/PB_Pop_Blocks_Price_Violations_8432_23022026/MapServer/0",
+    url: "https://map3.urbanunit.gov.pk:6443/arcgis/rest/services/Punjab/PB_Pop_Blocks_Price_Violations_8432_23022026/MapServer/2",
     title: "District Highlight",
     popupEnabled: false,
     definitionExpression: "1=0",
@@ -59,15 +59,7 @@ require([
     sublayers: [
       {
         id: 0,
-        title: "District Boundaries",
-        visible: true,
-        popupEnabled: false,
-        labelsVisible: false,
-      },
-
-      {
-        id: 1,
-        title: "Surveyed Shops",
+        title: "Shops Rate List Status",
         visible: true,
         popupEnabled: true,
         labelsVisible: false,
@@ -82,15 +74,9 @@ require([
                 { fieldName: "district_name", label: "District" },
                 { fieldName: "tehsil_name", label: "Tehsil" },
                 { fieldName: "city_name", label: "City" },
-                {
-                  fieldName: "commodity_violation_status",
-                  label: "Violation Status",
-                },
+                { fieldName: "commodity_violation_status", label: "Violation Status" },
                 { fieldName: "commodity_violation_list", label: "Violations" },
-                {
-                  fieldName: "rate_list_displayed",
-                  label: "Rate List Displayed",
-                },
+                { fieldName: "rate_list_displayed", label: "Rate List Displayed" },
                 {
                   fieldName: "survey_date_time",
                   label: "Survey Date",
@@ -111,61 +97,23 @@ require([
           ],
         },
       },
-
       {
-        id: 2,
-        title: "Violation Blocks",
+        id: 1,
+        title: "Violations Counts",
         visible: true,
         popupEnabled: false,
         labelsVisible: false,
       },
-
+      {
+        id: 2,
+        title: "Districts",
+        visible: true,
+        popupEnabled: false,
+        labelsVisible: false,
+      },
       {
         id: 3,
-        title: "Surveyed Shops (Secondary)",
-        visible: false,
-        popupEnabled: true,
-        labelsVisible: false,
-        popupTemplate: {
-          title: "{shop_name}",
-          content: [
-            {
-              type: "fields",
-              fieldInfos: [
-                { fieldName: "shop_name", label: "Shop Name" },
-                { fieldName: "shop_owner_name", label: "Owner" },
-                { fieldName: "district_name", label: "District" },
-                { fieldName: "tehsil_name", label: "Tehsil" },
-                { fieldName: "city_name", label: "City" },
-                {
-                  fieldName: "commodity_violation_status",
-                  label: "Violation Status",
-                },
-                { fieldName: "commodity_violation_list", label: "Violations" },
-                {
-                  fieldName: "rate_list_displayed",
-                  label: "Rate List Displayed",
-                },
-                { fieldName: "survey_date_time", label: "Survey Date" },
-              ],
-            },
-            {
-              type: "media",
-              mediaInfos: [
-                {
-                  title: "Shop Image",
-                  type: "image",
-                  value: { sourceURL: "{image}" },
-                },
-              ],
-            },
-          ],
-        },
-      },
-
-      {
-        id: 4,
-        title: "Population Blocks",
+        title: "Tehsils",
         visible: true,
         popupEnabled: false,
         labelsVisible: false,
@@ -189,7 +137,7 @@ require([
   });
 
   // =============================
-  // LEGEND + LAYER LIST (RESTORED)
+  // LEGEND + LAYER LIST
   // =============================
   view.ui.add(
     new Expand({
@@ -197,7 +145,7 @@ require([
       content: new Legend({ view }),
       expanded: true,
     }),
-    "top-right",
+    "top-right"
   );
 
   view.ui.add(
@@ -206,17 +154,16 @@ require([
       content: new LayerList({ view }),
       expanded: false,
     }),
-    "top-left",
+    "top-left"
   );
 
   // =============================
-  // APPLY FILTERS
+  // APPLY FILTERS (ONLY SHOPS LAYER)
   // =============================
   function applyFilters() {
     showLoader();
 
-    const shop1 = mainLayer.sublayers.find((s) => s.id === 1);
-    const shop3 = mainLayer.sublayers.find((s) => s.id === 3);
+    const shopsLayer = mainLayer.sublayers.find((s) => s.id === 0);
 
     let filters = [];
 
@@ -228,17 +175,18 @@ require([
       const nextDay = new Date(selectedDate);
       nextDay.setDate(nextDay.getDate() + 1);
 
-      const nextDate = `${nextDay.getFullYear()}-${String(nextDay.getMonth() + 1).padStart(2, "0")}-${String(nextDay.getDate()).padStart(2, "0")}`;
+      const nextDate = `${nextDay.getFullYear()}-${String(
+        nextDay.getMonth() + 1
+      ).padStart(2, "0")}-${String(nextDay.getDate()).padStart(2, "0")}`;
 
       filters.push(
-        `survey_date_time >= DATE '${selectedDate}' AND survey_date_time < DATE '${nextDate}'`,
+        `survey_date_time >= DATE '${selectedDate}' AND survey_date_time < DATE '${nextDate}'`
       );
     }
 
     const expr = filters.length ? filters.join(" AND ") : null;
 
-    if (shop1) shop1.definitionExpression = expr;
-    if (shop3) shop3.definitionExpression = expr;
+    if (shopsLayer) shopsLayer.definitionExpression = expr;
 
     setTimeout(hideLoader, 700);
   }
@@ -246,8 +194,7 @@ require([
   // =============================
   // DISTRICT FILTER
   // =============================
-  document
-    .getElementById("districtFilter")
+  document.getElementById("districtFilter")
     .addEventListener("change", function () {
       showLoader();
 
@@ -256,33 +203,33 @@ require([
       const provinceDiv = document.getElementById("provinceName");
       const opt = this.options[this.selectedIndex];
 
-      provinceDiv.textContent = selectedDistrict ? opt.dataset.name : "PUNJAB";
+      provinceDiv.textContent = selectedDistrict
+        ? opt.dataset.name
+        : "PUNJAB";
 
       applyFilters();
 
       if (selectedDistrict) {
-        districtHighlightLayer.definitionExpression = `district_id = ${selectedDistrict}`;
+        districtHighlightLayer.definitionExpression =
+          `district_id = ${selectedDistrict}`;
 
-        fetch(
-          `services/get_district_extent.php?district_id=${selectedDistrict}`,
-        )
+        fetch(`services/get_district_extent.php?district_id=${selectedDistrict}`)
           .then((res) => res.json())
           .then((ext) => {
-            view
-              .goTo(
-                new Extent({
-                  xmin: +ext.xmin,
-                  ymin: +ext.ymin,
-                  xmax: +ext.xmax,
-                  ymax: +ext.ymax,
-                  spatialReference: { wkid: 4326 },
-                }).expand(1.2),
-              )
-              .finally(hideLoader);
+            view.goTo(
+              new Extent({
+                xmin: +ext.xmin,
+                ymin: +ext.ymin,
+                xmax: +ext.xmax,
+                ymax: +ext.ymax,
+                spatialReference: { wkid: 4326 },
+              }).expand(1.2)
+            ).finally(hideLoader);
           });
       } else {
         districtHighlightLayer.definitionExpression = "1=0";
-        view.goTo({ center: [72.7097, 31.1704], zoom: 6 }).finally(hideLoader);
+        view.goTo({ center: [72.7097, 31.1704], zoom: 6 })
+          .finally(hideLoader);
       }
     });
 
@@ -311,14 +258,11 @@ require([
   // =============================
   document.querySelectorAll(".date-btn").forEach((btn) => {
     btn.addEventListener("click", function () {
-      document
-        .querySelectorAll(".date-btn")
+      document.querySelectorAll(".date-btn")
         .forEach((b) => b.classList.remove("active"));
 
       this.classList.add("active");
-
       selectedDate = this.dataset.date;
-
       applyFilters();
     });
   });
@@ -328,7 +272,9 @@ require([
   // =============================
   setTimeout(() => {
     const d = new Date();
-    const today = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+    const today = `${d.getFullYear()}-${String(
+      d.getMonth() + 1
+    ).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 
     const btn = document.querySelector(`.date-btn[data-date="${today}"]`);
     if (btn) btn.click();
