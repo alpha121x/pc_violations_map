@@ -39,6 +39,8 @@ require([
     },
   });
 
+  let selectedDate = "";
+
   // ======================================
   // MAIN MAP IMAGE LAYER
   // ======================================
@@ -186,6 +188,21 @@ require([
     },
   });
 
+  view.popup.watch("selectedFeature", function (graphic) {
+    if (!graphic || !graphic.attributes) return;
+
+    const attrs = graphic.attributes;
+
+    // owner fix
+    if (attrs.shop_owner_name == -1) {
+      attrs.shop_owner_name = "Not Available";
+    }
+
+    // rate list fix
+    attrs.rate_list_displayed =
+      attrs.rate_list_displayed == 1 ? "True" : "False";
+  });
+
   // ======================================
   // SMART ROAD LEVEL ZOOM ON SHOP CLICK
   // ======================================
@@ -311,4 +328,38 @@ require([
         select.appendChild(option);
       });
     });
+
+  document.querySelectorAll(".date-btn").forEach((btn) => {
+    btn.addEventListener("click", function () {
+      // remove active class
+      document
+        .querySelectorAll(".date-btn")
+        .forEach((b) => b.classList.remove("active"));
+
+      // set active
+      this.classList.add("active");
+
+      // store selected date
+      selectedDate = this.dataset.date;
+
+      // apply filter
+      applyFilters();
+    });
+  });
+
+  function applyFilters() {
+    const shopLayer1 = mainLayer.sublayers.find((s) => s.id === 1);
+    const shopLayer3 = mainLayer.sublayers.find((s) => s.id === 3);
+
+    let filters = [];
+    // date filter
+    if (selectedDate) {
+      filters.push(`DATE(survey_date_time) = DATE '${selectedDate}'`);
+    }
+
+    const finalExpression = filters.length ? filters.join(" AND ") : null;
+
+    if (shopLayer1) shopLayer1.definitionExpression = finalExpression;
+    if (shopLayer3) shopLayer3.definitionExpression = finalExpression;
+  }
 });
