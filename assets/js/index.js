@@ -188,20 +188,7 @@ require([
     },
   });
 
-  view.popup.watch("selectedFeature", function (graphic) {
-    if (!graphic || !graphic.attributes) return;
 
-    const attrs = graphic.attributes;
-
-    // owner fix
-    if (attrs.shop_owner_name == -1) {
-      attrs.shop_owner_name = "Not Available";
-    }
-
-    // rate list fix
-    attrs.rate_list_displayed =
-      attrs.rate_list_displayed == 1 ? "True" : "False";
-  });
 
   // ======================================
   // SMART ROAD LEVEL ZOOM ON SHOP CLICK
@@ -273,6 +260,17 @@ require([
     .addEventListener("change", function () {
       const districtId = this.value;
 
+      const provinceDiv = document.getElementById("provinceName");
+
+      // get selected option text
+      const selectedOption = this.options[this.selectedIndex];
+
+      if (districtId) {
+        provinceDiv.textContent = selectedOption.dataset.name;
+      } else {
+        provinceDiv.textContent = "PUNJAB";
+      }
+
       const shopLayer1 = mainLayer.sublayers.find((s) => s.id === 1);
       const shopLayer3 = mainLayer.sublayers.find((s) => s.id === 3);
 
@@ -320,11 +318,14 @@ require([
     .then((data) => {
       const select = document.getElementById("districtFilter");
       select.innerHTML = '<option value="">All Districts</option>';
-
       data.districts.forEach((item) => {
         const option = document.createElement("option");
         option.value = item.district_id;
         option.textContent = item.district_name;
+
+        // ⭐ store district name
+        option.dataset.name = item.district_name;
+
         select.appendChild(option);
       });
     });
