@@ -1,10 +1,18 @@
 <?php
 
-$host = "localhost";
-$port = "5433";
-$dbname = "db_cnw_rams";   // make sure this database exists
+// $host = "localhost";
+// $port = "5433";
+// $dbname = "db_cnw_rams";   // make sure this database exists
+// $user = "postgres";
+// $password = "1234";        // use the SAME password you used in pgAdmin
+
+
+$host = "172.20.82.84";
+$db   = "price_control_punjab";
 $user = "postgres";
-$password = "1234";        // use the SAME password you used in pgAdmin
+$pass = "diamondx";
+$port = "5432";
+
 
 try {
 
