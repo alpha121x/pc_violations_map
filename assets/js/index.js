@@ -123,7 +123,7 @@ require([
       {
         id: 3,
         title: "Surveyed Shops (Secondary)",
-        visible: true,
+        visible: false,
         popupEnabled: true,
         labelsVisible: false,
         popupTemplate: {
@@ -166,7 +166,7 @@ require([
       {
         id: 4,
         title: "Population Blocks",
-        visible: false,
+        visible: true,
         popupEnabled: false,
         labelsVisible: false,
       },
