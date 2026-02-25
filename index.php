@@ -25,6 +25,26 @@
             width: 100%;
             height: calc(100vh - 120px);
         }
+
+        /* FULLSCREEN MAP LOADER */
+        .loader-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .loader-spinner {
+            width: 80px;
+            height: 80px;
+            border-width: 8px;
+        }
     </style>
 </head>
 
@@ -96,6 +116,13 @@
 
     <!-- Map -->
     <div id="viewDiv"></div>
+
+    <!-- FULLSCREEN LOADER -->
+    <div id="mapLoader" class="loader-overlay d-none">
+        <div class="spinner-border text-success loader-spinner" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
