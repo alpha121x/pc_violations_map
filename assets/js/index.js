@@ -25,7 +25,7 @@ require([
   // Main MapImageLayer with all data
   const mainLayer = new MapImageLayer({
     url: "https://map3.urbanunit.gov.pk:6443/arcgis/rest/services/Punjab/PB_Pop_Blocks_Price_Violations_8432_23022026/MapServer",
-    title: "Punjab Survey Data",
+    title: "Punjab Surve",
     
     // Configure all sublayers
     sublayers: [
@@ -33,7 +33,7 @@ require([
         id: 0, 
         title: "District Boundaries", 
         visible: true,
-        popupEnabled: true,
+        popupEnabled: false,
         popupTemplate: {
           title: "District: {district_name}",
           content: [

@@ -32,7 +32,7 @@
 
     <!-- Header -->
     <header class="bg-dark text-white text-center py-3">
-        <h4 class="mb-0">Price Control Violation With Block</h4>
+        <h4 class="mb-0">Price Control Violation BlockWise</h4>
     </header>
 
     <!-- Filter Bar -->
