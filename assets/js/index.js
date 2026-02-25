@@ -6,7 +6,7 @@ require([
   "esri/widgets/Legend",
   "esri/widgets/Expand",
   "esri/widgets/LayerList",
-  "esri/geometry/Extent"
+  "esri/geometry/Extent",
 ], function (
   Map,
   MapView,
@@ -15,9 +15,8 @@ require([
   Legend,
   Expand,
   LayerList,
-  Extent
+  Extent,
 ) {
-
   // ======================================
   // DISTRICT HIGHLIGHT LAYER
   // ======================================
@@ -34,10 +33,10 @@ require([
         color: [180, 180, 180, 0.35],
         outline: {
           color: [80, 80, 80, 1],
-          width: 2
-        }
-      }
-    }
+          width: 2,
+        },
+      },
+    },
   });
 
   // ======================================
@@ -48,13 +47,12 @@ require([
     title: "Punjab Survey",
 
     sublayers: [
-
       {
         id: 0,
         title: "District Boundaries",
         visible: true,
         popupEnabled: false,
-        labelsVisible: false
+        labelsVisible: false,
       },
 
       {
@@ -74,26 +72,34 @@ require([
                 { fieldName: "district_name", label: "District" },
                 { fieldName: "tehsil_name", label: "Tehsil" },
                 { fieldName: "city_name", label: "City" },
-                { fieldName: "commodity_violation_status", label: "Violation Status" },
+                {
+                  fieldName: "commodity_violation_status",
+                  label: "Violation Status",
+                },
                 { fieldName: "commodity_violation_list", label: "Violations" },
-                { fieldName: "rate_list_displayed", label: "Rate List Displayed" },
+                {
+                  fieldName: "rate_list_displayed",
+                  label: "Rate List Displayed",
+                },
                 {
                   fieldName: "survey_date_time",
                   label: "Survey Date",
-                  format: { dateFormat: "short-date-short-time" }
-                }
-              ]
+                  format: { dateFormat: "short-date-short-time" },
+                },
+              ],
             },
             {
               type: "media",
-              mediaInfos: [{
-                title: "Shop Image",
-                type: "image",
-                value: { sourceURL: "{image}" }
-              }]
-            }
-          ]
-        }
+              mediaInfos: [
+                {
+                  title: "Shop Image",
+                  type: "image",
+                  value: { sourceURL: "{image}" },
+                },
+              ],
+            },
+          ],
+        },
       },
 
       {
@@ -101,7 +107,7 @@ require([
         title: "Violation Blocks",
         visible: true,
         popupEnabled: false,
-        labelsVisible: false
+        labelsVisible: false,
       },
 
       {
@@ -121,23 +127,31 @@ require([
                 { fieldName: "district_name", label: "District" },
                 { fieldName: "tehsil_name", label: "Tehsil" },
                 { fieldName: "city_name", label: "City" },
-                { fieldName: "commodity_violation_status", label: "Violation Status" },
+                {
+                  fieldName: "commodity_violation_status",
+                  label: "Violation Status",
+                },
                 { fieldName: "commodity_violation_list", label: "Violations" },
-                { fieldName: "rate_list_displayed", label: "Rate List Displayed" },
+                {
+                  fieldName: "rate_list_displayed",
+                  label: "Rate List Displayed",
+                },
                 { fieldName: "survey_date_time", label: "Survey Date" },
-                { fieldName: "image", label: "Image URL" }
-              ]
+                { fieldName: "image", label: "Image URL" },
+              ],
             },
             {
               type: "media",
-              mediaInfos: [{
-                title: "Shop Image",
-                type: "image",
-                value: { sourceURL: "{image}" }
-              }]
-            }
-          ]
-        }
+              mediaInfos: [
+                {
+                  title: "Shop Image",
+                  type: "image",
+                  value: { sourceURL: "{image}" },
+                },
+              ],
+            },
+          ],
+        },
       },
 
       {
@@ -145,9 +159,9 @@ require([
         title: "Population Blocks",
         visible: false,
         popupEnabled: false,
-        labelsVisible: false
-      }
-    ]
+        labelsVisible: false,
+      },
+    ],
   });
 
   // ======================================
@@ -155,7 +169,7 @@ require([
   // ======================================
   const map = new Map({
     basemap: "streets-navigation-vector",
-    layers: [mainLayer, districtHighlightLayer]
+    layers: [mainLayer, districtHighlightLayer],
   });
 
   // ======================================
@@ -168,43 +182,84 @@ require([
     zoom: 6,
     popup: {
       dockEnabled: true,
-      dockOptions: { position: "top-right" }
-    }
+      dockOptions: { position: "top-right" },
+    },
+  });
+
+  // ======================================
+  // SMART ROAD LEVEL ZOOM ON SHOP CLICK
+  // ======================================
+  view.on("click", function (event) {
+    view.hitTest(event).then(function (response) {
+      if (!response.results.length) return;
+
+      // find clicked shop feature
+      const shopResult = response.results.find(
+        (r) =>
+          r.graphic && r.graphic.attributes && r.graphic.attributes.shop_name,
+      );
+
+      if (!shopResult) return;
+
+      const graphic = shopResult.graphic;
+
+      // ⭐ road-level zoom logic
+      const ROAD_ZOOM = 17;
+
+      // only zoom if currently far away
+      if (view.zoom < ROAD_ZOOM) {
+        view.goTo(
+          {
+            target: graphic.geometry,
+            zoom: ROAD_ZOOM,
+          },
+          {
+            duration: 900,
+            easing: "ease-in-out",
+          },
+        );
+      }
+    });
   });
 
   // remove labels safety
   mainLayer.when(() => {
-    mainLayer.sublayers.forEach(s => s.labelsVisible = false);
+    mainLayer.sublayers.forEach((s) => (s.labelsVisible = false));
   });
 
   // ======================================
   // WIDGETS
   // ======================================
-  view.ui.add(new Expand({
-    view,
-    content: new Legend({ view }),
-    expanded: true
-  }), "top-right");
+  view.ui.add(
+    new Expand({
+      view,
+      content: new Legend({ view }),
+      expanded: true,
+    }),
+    "top-right",
+  );
 
-  view.ui.add(new Expand({
-    view,
-    content: new LayerList({ view }),
-    expanded: false
-  }), "top-left");
+  view.ui.add(
+    new Expand({
+      view,
+      content: new LayerList({ view }),
+      expanded: false,
+    }),
+    "top-left",
+  );
 
   // ======================================
   // DISTRICT FILTER
   // ======================================
-  document.getElementById("districtFilter")
+  document
+    .getElementById("districtFilter")
     .addEventListener("change", function () {
-
       const districtId = this.value;
 
-      const shopLayer1 = mainLayer.sublayers.find(s => s.id === 1);
-      const shopLayer3 = mainLayer.sublayers.find(s => s.id === 3);
+      const shopLayer1 = mainLayer.sublayers.find((s) => s.id === 1);
+      const shopLayer3 = mainLayer.sublayers.find((s) => s.id === 3);
 
       if (districtId) {
-
         if (shopLayer1)
           shopLayer1.definitionExpression = `district_id = ${districtId}`;
 
@@ -212,25 +267,22 @@ require([
           shopLayer3.definitionExpression = `district_id = ${districtId}`;
 
         // highlight district
-        districtHighlightLayer.definitionExpression =
-          `district_id = ${districtId}`;
+        districtHighlightLayer.definitionExpression = `district_id = ${districtId}`;
 
         fetch(`services/get_district_extent.php?district_id=${districtId}`)
-          .then(res => res.json())
-          .then(extent => {
-
-            view.goTo(new Extent({
-              xmin: Number(extent.xmin),
-              ymin: Number(extent.ymin),
-              xmax: Number(extent.xmax),
-              ymax: Number(extent.ymax),
-              spatialReference: { wkid: 4326 }
-            }).expand(1.2));
-
+          .then((res) => res.json())
+          .then((extent) => {
+            view.goTo(
+              new Extent({
+                xmin: Number(extent.xmin),
+                ymin: Number(extent.ymin),
+                xmax: Number(extent.xmax),
+                ymax: Number(extent.ymax),
+                spatialReference: { wkid: 4326 },
+              }).expand(1.2),
+            );
           });
-
       } else {
-
         if (shopLayer1) shopLayer1.definitionExpression = null;
         if (shopLayer3) shopLayer3.definitionExpression = null;
 
@@ -238,7 +290,7 @@ require([
 
         view.goTo({
           center: [72.7097, 31.1704],
-          zoom: 6
+          zoom: 6,
         });
       }
     });
@@ -247,19 +299,16 @@ require([
   // LOAD DISTRICTS
   // ======================================
   fetch("services/get_districts.php")
-    .then(res => res.json())
-    .then(data => {
-
+    .then((res) => res.json())
+    .then((data) => {
       const select = document.getElementById("districtFilter");
       select.innerHTML = '<option value="">All Districts</option>';
 
-      data.districts.forEach(item => {
+      data.districts.forEach((item) => {
         const option = document.createElement("option");
         option.value = item.district_id;
         option.textContent = item.district_name;
         select.appendChild(option);
       });
-
     });
-
 });
