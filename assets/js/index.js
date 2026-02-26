@@ -99,7 +99,7 @@ require([
               title: "Shop Image",
               type: "image",
               value: {
-                sourceURL: "{image}", // <-- image field from service
+                sourceURL: "{image}".replace("http://", "https://"),
               },
             },
           ],
