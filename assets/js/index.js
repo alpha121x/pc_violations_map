@@ -39,6 +39,11 @@ require([
     title: "Violations Counts",
     outFields: ["*"],
     popupEnabled: true,
+
+    // 🔥 FORCE LABELS OFF
+    labelsVisible: false,
+    labelingInfo: [],
+
     popupTemplate: {
       title: "Block: {block_code}",
       content: [
@@ -64,45 +69,43 @@ require([
     labelsVisible: false,
     labelsVisible: false,
     popupTemplate: {
-  title: "{shop_name}",
-  content: [
-
-    // ===== Fields =====
-    {
-      type: "fields",
-      fieldInfos: [
-        { fieldName: "shop_name", label: "Shop Name" },
-        { fieldName: "shop_owner_name", label: "Owner" },
-        { fieldName: "district_name", label: "District" },
-        { fieldName: "tehsil_name", label: "Tehsil" },
-        { fieldName: "city_name", label: "City" },
+      title: "{shop_name}",
+      content: [
+        // ===== Fields =====
         {
-          fieldName: "commodity_violation_status",
-          label: "Violation Status"
+          type: "fields",
+          fieldInfos: [
+            { fieldName: "shop_name", label: "Shop Name" },
+            { fieldName: "shop_owner_name", label: "Owner" },
+            { fieldName: "district_name", label: "District" },
+            { fieldName: "tehsil_name", label: "Tehsil" },
+            { fieldName: "city_name", label: "City" },
+            {
+              fieldName: "commodity_violation_status",
+              label: "Violation Status",
+            },
+            {
+              fieldName: "rate_list_displayed",
+              label: "Rate List Displayed",
+            },
+          ],
         },
+
+        // ===== IMAGE =====
         {
-          fieldName: "rate_list_displayed",
-          label: "Rate List Displayed"
-        }
-      ]
+          type: "media",
+          mediaInfos: [
+            {
+              title: "Shop Image",
+              type: "image",
+              value: {
+                sourceURL: "{image}", // <-- image field from service
+              },
+            },
+          ],
+        },
+      ],
     },
-
-    // ===== IMAGE =====
-    {
-      type: "media",
-      mediaInfos: [
-        {
-          title: "Shop Image",
-          type: "image",
-          value: {
-            sourceURL: "{image}"   // <-- image field from service
-          }
-        }
-      ]
-    }
-
-  ]
-},
   });
 
   // =============================
