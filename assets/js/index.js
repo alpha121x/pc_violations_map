@@ -15,9 +15,8 @@ require([
   Legend,
   Expand,
   LayerList,
-  Extent
+  Extent,
 ) {
-
   let selectedDate = "";
   let selectedDistrict = "";
 
@@ -33,14 +32,56 @@ require([
   }
 
   // =============================
-  // VIOLATIONS LAYER
+  // VIOLATIONS LAYER (POLYGONS)
   // =============================
   const violationsLayer = new FeatureLayer({
     url: "https://map3.urbanunit.gov.pk:6443/arcgis/rest/services/Punjab/PB_Pop_Blocks_Price_Violations_8432_23022026/MapServer/1",
     title: "Violations Counts",
     outFields: ["*"],
+    popupEnabled: true,
+    popupTemplate: {
+      title: "Block: {block_code}",
+      content: [
+        {
+          type: "fields",
+          fieldInfos: [
+            { fieldName: "block_code", label: "Block Code" },
+            { fieldName: "violation_count", label: "Violation Count" },
+          ],
+        },
+      ],
+    },
+  });
+
+  // =============================
+  // SHOPS LAYER (POINTS) ⭐ FIXED
+  // =============================
+  const shopsLayer = new FeatureLayer({
+    url: "https://map3.urbanunit.gov.pk:6443/arcgis/rest/services/Punjab/PB_Pop_Blocks_Price_Violations_8432_23022026/MapServer/0",
+    title: "Shops Rate List Status",
+    outFields: ["*"],
+    popupEnabled: true,
     labelsVisible: false,
-    popupEnabled: true
+    popupTemplate: {
+      title: "{shop_name}",
+      content: [
+        {
+          type: "fields",
+          fieldInfos: [
+            { fieldName: "shop_name", label: "Shop Name" },
+            { fieldName: "shop_owner_name", label: "Owner" },
+            { fieldName: "district_name", label: "District" },
+            { fieldName: "tehsil_name", label: "Tehsil" },
+            { fieldName: "city_name", label: "City" },
+            {
+              fieldName: "commodity_violation_status",
+              label: "Violation Status",
+            },
+            { fieldName: "rate_list_displayed", label: "Rate List Displayed" },
+          ],
+        },
+      ],
+    },
   });
 
   // =============================
@@ -56,22 +97,21 @@ require([
       symbol: {
         type: "simple-fill",
         color: [180, 180, 180, 0.35],
-        outline: { color: [80, 80, 80, 1], width: 2 }
-      }
-    }
+        outline: { color: [80, 80, 80, 1], width: 2 },
+      },
+    },
   });
 
   // =============================
-  // MAIN MAP IMAGE LAYER (SHOPS)
+  // BOUNDARIES (MapImageLayer)
   // =============================
-  const mainLayer = new MapImageLayer({
+  const boundariesLayer = new MapImageLayer({
     url: "https://map3.urbanunit.gov.pk:6443/arcgis/rest/services/Punjab/PB_Pop_Blocks_Price_Violations_8432_23022026/MapServer",
-    title: "Punjab Survey",
+    title: "Boundaries",
     sublayers: [
-      { id: 0, title: "Shops Rate List Status", visible: true, popupEnabled: true },
       { id: 2, title: "Districts", visible: true },
-      { id: 3, title: "Tehsils", visible: true }
-    ]
+      { id: 3, title: "Tehsils", visible: true },
+    ],
   });
 
   // =============================
@@ -79,23 +119,19 @@ require([
   // =============================
   const map = new Map({
     basemap: "gray-vector",
-    layers: [violationsLayer, mainLayer, districtHighlightLayer]
+    layers: [
+      violationsLayer, // BACK polygons
+      boundariesLayer,
+      shopsLayer, // POINTS ABOVE
+      districtHighlightLayer,
+    ],
   });
 
   const view = new MapView({
     container: "viewDiv",
     map,
     center: [72.7097, 31.1704],
-    zoom: 6
-  });
-
-  // =============================
-  // DEBUG INFO
-  // =============================
-  view.when(() => {
-    violationsLayer.queryFeatureCount().then(c => {
-      console.log("Violations Feature Count:", c);
-    });
+    zoom: 6,
   });
 
   // =============================
@@ -105,28 +141,25 @@ require([
     new Expand({
       view,
       content: new Legend({ view }),
-      expanded: true
+      expanded: true,
     }),
-    "top-right"
+    "top-right",
   );
 
   view.ui.add(
     new Expand({
       view,
       content: new LayerList({ view }),
-      expanded: false
+      expanded: false,
     }),
-    "top-left"
+    "top-left",
   );
 
   // =============================
-  // APPLY FILTERS
+  // APPLY FILTERS (SHOPS)
   // =============================
   function applyFilters() {
-
     showLoader();
-
-    const shopsLayer = mainLayer.sublayers.find(s => s.id === 0);
 
     let filters = [];
 
@@ -135,15 +168,13 @@ require([
     }
 
     if (selectedDate) {
-
       const nextDay = new Date(selectedDate);
       nextDay.setDate(nextDay.getDate() + 1);
 
-      const nextDate =
-        `${nextDay.getFullYear()}-${String(nextDay.getMonth() + 1).padStart(2,"0")}-${String(nextDay.getDate()).padStart(2,"0")}`;
+      const nextDate = `${nextDay.getFullYear()}-${String(nextDay.getMonth() + 1).padStart(2, "0")}-${String(nextDay.getDate()).padStart(2, "0")}`;
 
       filters.push(
-        `survey_date_time >= DATE '${selectedDate}' AND survey_date_time < DATE '${nextDate}'`
+        `survey_date_time >= DATE '${selectedDate}' AND survey_date_time < DATE '${nextDate}'`,
       );
     }
 
@@ -157,17 +188,15 @@ require([
   }
 
   // =============================
-  // DISTRICT DROPDOWN LOAD (RESTORED)
+  // DISTRICT DROPDOWN LOAD
   // =============================
   fetch("services/get_districts.php")
-    .then(res => res.json())
-    .then(data => {
-
+    .then((res) => res.json())
+    .then((data) => {
       const select = document.getElementById("districtFilter");
-
       select.innerHTML = `<option value="">All Districts</option>`;
 
-      data.districts.forEach(item => {
+      data.districts.forEach((item) => {
         const op = document.createElement("option");
         op.value = item.district_id;
         op.textContent = item.district_name;
@@ -179,59 +208,55 @@ require([
     });
 
   // =============================
-  // DISTRICT FILTER CHANGE
+  // DISTRICT CHANGE
   // =============================
-  document.getElementById("districtFilter")
+  document
+    .getElementById("districtFilter")
     .addEventListener("change", function () {
-
       showLoader();
-
       selectedDistrict = this.value;
 
       const opt = this.options[this.selectedIndex];
-      document.getElementById("provinceName").textContent =
-        selectedDistrict ? opt.dataset.name : "PUNJAB";
+      document.getElementById("provinceName").textContent = selectedDistrict
+        ? opt.dataset.name
+        : "PUNJAB";
 
       applyFilters();
 
       if (selectedDistrict) {
+        districtHighlightLayer.definitionExpression = `district_id = ${selectedDistrict}`;
 
-        const districtExpr = `district_id = ${selectedDistrict}`;
-        console.log("District Highlight Expression:", districtExpr);
-
-        districtHighlightLayer.definitionExpression = districtExpr;
-
-        fetch(`services/get_district_extent.php?district_id=${selectedDistrict}`)
-          .then(res => res.json())
-          .then(ext => {
-
-            view.goTo(
-              new Extent({
-                xmin: +ext.xmin,
-                ymin: +ext.ymin,
-                xmax: +ext.xmax,
-                ymax: +ext.ymax,
-                spatialReference: { wkid: 4326 }
-              }).expand(1.2)
-            ).finally(hideLoader);
-
+        fetch(
+          `services/get_district_extent.php?district_id=${selectedDistrict}`,
+        )
+          .then((res) => res.json())
+          .then((ext) => {
+            view
+              .goTo(
+                new Extent({
+                  xmin: +ext.xmin,
+                  ymin: +ext.ymin,
+                  xmax: +ext.xmax,
+                  ymax: +ext.ymax,
+                  spatialReference: { wkid: 4326 },
+                }).expand(1.2),
+              )
+              .finally(hideLoader);
           });
-
       } else {
         districtHighlightLayer.definitionExpression = "1=0";
-        view.goTo({ center:[72.7097,31.1704], zoom:12 })
-          .finally(hideLoader);
+        view.goTo({ center: [72.7097, 31.1704], zoom: 8 }).finally(hideLoader);
       }
     });
 
   // =============================
-  // DATE BUTTONS (RESTORED)
+  // DATE BUTTONS
   // =============================
-  document.querySelectorAll(".date-btn").forEach(btn => {
+  document.querySelectorAll(".date-btn").forEach((btn) => {
     btn.addEventListener("click", function () {
-
-      document.querySelectorAll(".date-btn")
-        .forEach(b => b.classList.remove("active"));
+      document
+        .querySelectorAll(".date-btn")
+        .forEach((b) => b.classList.remove("active"));
 
       this.classList.add("active");
 
@@ -247,23 +272,15 @@ require([
   // AUTO SELECT TODAY
   // =============================
   setTimeout(() => {
-
     const d = new Date();
 
-    const today =
-      `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+    const today = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 
-    const btn = document.querySelector(
-      `.date-btn[data-date="${today}"]`
-    );
+    const btn = document.querySelector(`.date-btn[data-date="${today}"]`);
 
     if (btn) {
       console.log("AUTO SELECT DATE:", today);
       btn.click();
-    } else {
-      console.log("No button found for:", today);
     }
-
   }, 500);
-
 });
