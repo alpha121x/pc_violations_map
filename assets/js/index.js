@@ -64,25 +64,45 @@ require([
     labelsVisible: false,
     labelsVisible: false,
     popupTemplate: {
-      title: "{shop_name}",
-      content: [
+  title: "{shop_name}",
+  content: [
+
+    // ===== Fields =====
+    {
+      type: "fields",
+      fieldInfos: [
+        { fieldName: "shop_name", label: "Shop Name" },
+        { fieldName: "shop_owner_name", label: "Owner" },
+        { fieldName: "district_name", label: "District" },
+        { fieldName: "tehsil_name", label: "Tehsil" },
+        { fieldName: "city_name", label: "City" },
         {
-          type: "fields",
-          fieldInfos: [
-            { fieldName: "shop_name", label: "Shop Name" },
-            { fieldName: "shop_owner_name", label: "Owner" },
-            { fieldName: "district_name", label: "District" },
-            { fieldName: "tehsil_name", label: "Tehsil" },
-            { fieldName: "city_name", label: "City" },
-            {
-              fieldName: "commodity_violation_status",
-              label: "Violation Status",
-            },
-            { fieldName: "rate_list_displayed", label: "Rate List Displayed" },
-          ],
+          fieldName: "commodity_violation_status",
+          label: "Violation Status"
         },
-      ],
+        {
+          fieldName: "rate_list_displayed",
+          label: "Rate List Displayed"
+        }
+      ]
     },
+
+    // ===== IMAGE =====
+    {
+      type: "media",
+      mediaInfos: [
+        {
+          title: "Shop Image",
+          type: "image",
+          value: {
+            sourceURL: "{image}"   // <-- image field from service
+          }
+        }
+      ]
+    }
+
+  ]
+},
   });
 
   // =============================
