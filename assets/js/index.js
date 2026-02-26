@@ -39,6 +39,7 @@ require([
     url: "https://map3.urbanunit.gov.pk:6443/arcgis/rest/services/Punjab/PB_Pop_Blocks_Price_Violations_8432_23022026/MapServer/1",
     title: "Violations Counts",
     outFields: ["*"],
+    labelsVisible: false,
     popupEnabled: true
   });
 
