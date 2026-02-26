@@ -62,6 +62,7 @@ require([
     outFields: ["*"],
     popupEnabled: true,
     labelsVisible: false,
+    labelsVisible: false,
     popupTemplate: {
       title: "{shop_name}",
       content: [
