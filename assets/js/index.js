@@ -59,6 +59,39 @@ require([
   });
 
   // =============================
+  // POPULATION BLOCK LAYER (GEOMETRY)
+  // =============================
+  const populationBlockLayer = new FeatureLayer({
+    url: "https://map3.urbanunit.gov.pk:6443/arcgis/rest/services/Punjab/PB_Pop_Blocks_Price_Violations_8432_23022026/MapServer/4",
+    title: "Population Blocks",
+    outFields: ["*"],
+    popupEnabled: true,
+    labelsVisible: false,
+
+    // renderer: {
+    //   type: "simple",
+    //   symbol: {
+    //     type: "simple-fill",
+    //     color: [0, 0, 0, 0], // transparent fill
+    //     outline: {
+    //       color: [255, 0, 0, 1], // RED outline (visible)
+    //       width: 1,
+    //     },
+    //   },
+    // },
+
+    popupTemplate: {
+      title: "Population Blocks",
+      content: [
+        {
+          type: "fields",
+          fieldInfos: [{ fieldName: "block_code", label: "Block Code" }],
+        },
+      ],
+    },
+  });
+
+  // =============================
   // SHOPS LAYER (POINTS) ⭐ FIXED
   // =============================
   const shopsLayer = new FeatureLayer({
@@ -66,7 +99,6 @@ require([
     title: "Shops Rate List Status",
     outFields: ["*"],
     popupEnabled: true,
-    labelsVisible: false,
     labelsVisible: false,
     popupTemplate: {
       title: "{shop_name}",
@@ -144,9 +176,10 @@ require([
   const map = new Map({
     basemap: "gray-vector",
     layers: [
-      violationsLayer, // BACK polygons
+      violationsLayer,
       boundariesLayer,
-      shopsLayer, // POINTS ABOVE
+      populationBlockLayer, // move ABOVE polygons
+      shopsLayer,
       districtHighlightLayer,
     ],
   });
