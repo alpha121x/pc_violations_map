@@ -37,7 +37,7 @@ require([
   // VIOLATIONS LAYER (POLYGONS)
   // =============================
   const violationsLayer = new FeatureLayer({
-    url: "https://map3.urbanunit.gov.pk:6443/arcgis/rest/services/Punjab/PB_Pop_Blocks_Price_Violations_8432_23022026/MapServer/1",
+    url: "https://map3.urbanunit.gov.pk:6443/arcgis/rest/services/Punjab/PB_Price_Pop_Blocks_Price_Violations_8432_27022026/MapServer/1",
     title: "Violations Counts",
     outFields: ["*"],
     popupEnabled: true,
@@ -64,7 +64,7 @@ require([
   // POPULATION BLOCK LAYER (GEOMETRY)
   // =============================
   const populationBlockLayer = new FeatureLayer({
-    url: "https://map3.urbanunit.gov.pk:6443/arcgis/rest/services/Punjab/PB_Pop_Blocks_Price_Violations_8432_23022026/MapServer/4",
+    url: "https://map3.urbanunit.gov.pk:6443/arcgis/rest/services/Punjab/PB_Price_Pop_Blocks_Price_Violations_8432_27022026/MapServer/4",
     title: "Population Blocks",
     outFields: ["*"],
     popupEnabled: true,
@@ -84,7 +84,7 @@ require([
   // SHOPS LAYER (POINTS) ⭐ FIXED
   // =============================
   const shopsLayer = new FeatureLayer({
-    url: "https://map3.urbanunit.gov.pk:6443/arcgis/rest/services/Punjab/PB_Pop_Blocks_Price_Violations_8432_23022026/MapServer/0",
+    url: "https://map3.urbanunit.gov.pk:6443/arcgis/rest/services/Punjab/PB_Price_Pop_Blocks_Price_Violations_8432_27022026/MapServer/0",
     title: "Shops Rate List Status",
     outFields: ["*"],
     popupEnabled: true,
@@ -133,7 +133,7 @@ require([
   // DISTRICT HIGHLIGHT
   // =============================
   const districtHighlightLayer = new FeatureLayer({
-    url: "https://map3.urbanunit.gov.pk:6443/arcgis/rest/services/Punjab/PB_Pop_Blocks_Price_Violations_8432_23022026/MapServer/2",
+    url: "https://map3.urbanunit.gov.pk:6443/arcgis/rest/services/Punjab/PB_Price_Pop_Blocks_Price_Violations_8432_27022026/MapServer/2",
     title: "District Highlight",
     popupEnabled: false,
     definitionExpression: "1=0",
@@ -151,7 +151,7 @@ require([
   // BOUNDARIES (MapImageLayer)
   // =============================
   const boundariesLayer = new MapImageLayer({
-    url: "https://map3.urbanunit.gov.pk:6443/arcgis/rest/services/Punjab/PB_Pop_Blocks_Price_Violations_8432_23022026/MapServer",
+    url: "https://map3.urbanunit.gov.pk:6443/arcgis/rest/services/Punjab/PB_Price_Pop_Blocks_Price_Violations_8432_27022026/MapServer",
     title: "Boundaries",
     sublayers: [
       { id: 2, title: "Districts", visible: true },
