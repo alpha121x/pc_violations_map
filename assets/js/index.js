@@ -6,6 +6,7 @@ require([
   "esri/widgets/Legend",
   "esri/widgets/Expand",
   "esri/widgets/LayerList",
+  "esri/widgets/Search", // ⭐ ADD THIS
   "esri/geometry/Extent",
 ], function (
   Map,
@@ -15,6 +16,7 @@ require([
   Legend,
   Expand,
   LayerList,
+  Search, // ⭐ ADD THIS
   Extent,
 ) {
   let selectedDate = "";
@@ -178,6 +180,10 @@ require([
     zoom: 6,
   });
 
+  const searchWidget = new Search({
+    view: view,
+  });
+
   // =============================
   // LEGEND + LAYER LIST
   // =============================
@@ -198,6 +204,8 @@ require([
     }),
     "top-left",
   );
+
+  view.ui.add(searchWidget, "top-left");
 
   // =============================
   // APPLY FILTERS (SHOPS)
