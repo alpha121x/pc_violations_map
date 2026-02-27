@@ -67,19 +67,6 @@ require([
     outFields: ["*"],
     popupEnabled: true,
     labelsVisible: false,
-
-    // renderer: {
-    //   type: "simple",
-    //   symbol: {
-    //     type: "simple-fill",
-    //     color: [0, 0, 0, 0], // transparent fill
-    //     outline: {
-    //       color: [255, 0, 0, 1], // RED outline (visible)
-    //       width: 1,
-    //     },
-    //   },
-    // },
-
     popupTemplate: {
       title: "Population Blocks",
       content: [
