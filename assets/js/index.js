@@ -13,6 +13,7 @@ require([
   MapView,
   MapImageLayer,
   FeatureLayer,
+
   Legend,
   Expand,
   LayerList,
@@ -120,7 +121,8 @@ require([
               title: "Shop Image",
               type: "image",
               value: {
-                sourceURL: "{image}".replace("http://", "https://"),
+                sourceURL:
+                  "https://ict.urbanunit.gov.pk/image_proxy.php?url={image}",
               },
             },
           ],
