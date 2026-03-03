@@ -122,7 +122,7 @@ require([
               type: "image",
               value: {
                 sourceURL:
-                  "https://ict.urbanunit.gov.pk/image_proxy.php?url={image}",
+                  "https://ict.urbanunit.gov.pk/pc_violations_map/image_proxy.php?url={image}",
               },
             },
           ],
