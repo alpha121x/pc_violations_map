@@ -91,8 +91,19 @@ require([
     labelsVisible: false,
     popupTemplate: {
       title: "{shop_name}",
+      expressionInfos: [
+        {
+          name: "secureImage",
+          expression: `
+        IIF(
+          Left($feature.image, 7) == "http://",
+          Replace($feature.image, "http://", "https://"),
+          $feature.image
+        )
+      `,
+        },
+      ],
       content: [
-        // ===== Fields =====
         {
           type: "fields",
           fieldInfos: [
@@ -105,14 +116,9 @@ require([
               fieldName: "commodity_violation_status",
               label: "Violation Status",
             },
-            {
-              fieldName: "rate_list_displayed",
-              label: "Rate List Displayed",
-            },
+            { fieldName: "rate_list_displayed", label: "Rate List Displayed" },
           ],
         },
-
-        // ===== IMAGE =====
         {
           type: "media",
           mediaInfos: [
@@ -120,7 +126,7 @@ require([
               title: "Shop Image",
               type: "image",
               value: {
-                sourceURL: "{image}".replace("http://", "https://"),
+                sourceURL: "{expression/secureImage}",
               },
             },
           ],
