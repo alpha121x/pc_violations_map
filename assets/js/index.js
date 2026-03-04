@@ -80,10 +80,15 @@ require([
     },
   });
 
-  // =============================
-  // SHOPS LAYER (POINTS) ⭐ FIXED
-  // =============================
-  const shopsLayer = new FeatureLayer({
+	// =============================
+	// SHOPS LAYER (POINTS) ⭐ FIXED
+	// =============================
+	const imageProxyUrl = new URL(
+	  "services/image_proxy.php?url=",
+	  window.location.href,
+	).toString();
+
+	const shopsLayer = new FeatureLayer({
     url: "https://map3.urbanunit.gov.pk:6443/arcgis/rest/services/Punjab/PB_Price_Pop_Blocks_Price_Violations_8432_27022026/MapServer/0",
     title: "Shops Rate List Status",
     outFields: ["*"],
@@ -113,18 +118,18 @@ require([
         },
 
         // ===== IMAGE =====
-        {
-          type: "media",
-          mediaInfos: [
-            {
-              title: "Shop Image",
-              type: "image",
-              value: {
-                sourceURL: "{image}".replace("http://", "https://"),
-              },
-            },
-          ],
-        },
+	        {
+	          type: "media",
+	          mediaInfos: [
+	            {
+	              title: "Shop Image",
+	              type: "image",
+	              value: {
+	                sourceURL: `${imageProxyUrl}{image}`,
+	              },
+	            },
+	          ],
+	        },
       ],
     },
   });
