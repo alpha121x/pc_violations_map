@@ -45,11 +45,21 @@ if ($ch === false) {
 $resolveRules = [];
 $content2Ip = getenv('IMAGE_PROXY_CONTENT2_IP');
 if (!is_string($content2Ip) || trim($content2Ip) === '') {
-    $content2Ip = '172.20.82.86';
+    $content2Ip = '172.20.81.66';
 }
 if (trim($content2Ip) !== '') {
+    $resolveIp = trim($content2Ip);
+    $resolvePort = $allowedPort;
+    // Allow override in "IP:PORT" format as well.
+    if (strpos($resolveIp, ':') !== false) {
+        [$ipPart, $portPart] = array_pad(explode(':', $resolveIp, 2), 2, '');
+        $resolveIp = trim($ipPart);
+        if (ctype_digit(trim($portPart))) {
+            $resolvePort = (int) trim($portPart);
+        }
+    }
     // Optional DNS override for environments where host DNS is broken.
-    $resolveRules[] = $allowedHost . ':' . $allowedPort . ':' . trim($content2Ip);
+    $resolveRules[] = $allowedHost . ':' . $resolvePort . ':' . $resolveIp;
 }
 
 curl_setopt_array($ch, [
