@@ -16,26 +16,33 @@ if ($rawUrl === '') {
 $decodedUrl = urldecode($rawUrl);
 $parts = parse_url($decodedUrl);
 
-if (!is_array($parts) || !isset($parts['scheme'], $parts['host'])) {
+if (!is_array($parts) || !isset($parts['path'])) {
     http_response_code(400);
     echo 'Invalid URL.';
     exit;
 }
 
-$scheme = strtolower($parts['scheme']);
-$host = strtolower($parts['host']);
-$port = isset($parts['port']) ? (int) $parts['port'] : null;
-
-// Tight allow-list to reduce SSRF risk.
-$allowedHost = 'content2.urbanunit.gov.pk';
-$allowedPort = 8083;
-if ($scheme !== 'http' || $host !== $allowedHost || $port !== $allowedPort) {
-    http_response_code(403);
-    echo 'URL not allowed.';
+$fileName = basename((string) $parts['path']);
+if ($fileName === '' || $fileName === '.' || $fileName === '..') {
+    http_response_code(400);
+    echo 'Invalid image path.';
     exit;
 }
 
-$ch = curl_init($decodedUrl);
+$decodedFileName = rawurldecode($fileName);
+if (!preg_match('/^[A-Za-z0-9._-]+$/', $decodedFileName)) {
+    http_response_code(400);
+    echo 'Invalid image filename.';
+    exit;
+}
+
+// Force all image fetches to a fixed internal endpoint.
+$forcedHost = '172.20.81.86';
+$forcedPort = 8083;
+$forcedBasePath = '/PPC_V822_SURVEY/';
+$targetUrl = 'http://' . $forcedHost . ':' . $forcedPort . $forcedBasePath . rawurlencode($decodedFileName);
+
+$ch = curl_init($targetUrl);
 if ($ch === false) {
     http_response_code(500);
     echo 'Failed to initialize proxy request.';
@@ -67,13 +74,13 @@ if ($body === false || $status < 200 || $status >= 300) {
         'curl_errno' => $errno,
     ];
     if ($debug) {
-        $payload['upstream_url'] = $decodedUrl;
+        $payload['upstream_url'] = $targetUrl;
         $payload['effective_url'] = $effectiveUrl;
         $payload['curl_error'] = $err;
     }
     error_log(
         'image_proxy fetch failed'
-        . ' upstream=' . $decodedUrl
+        . ' upstream=' . $targetUrl
         . ' status=' . $status
         . ' errno=' . $errno
         . ' error=' . $err
