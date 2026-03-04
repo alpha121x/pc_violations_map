@@ -42,6 +42,7 @@ if ($ch === false) {
     exit;
 }
 
+
 $resolveRules = [];
 $content2Ip = getenv('IMAGE_PROXY_CONTENT2_IP');
 if (!is_string($content2Ip) || trim($content2Ip) === '') {
