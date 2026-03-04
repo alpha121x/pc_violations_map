@@ -42,12 +42,23 @@ if ($ch === false) {
     exit;
 }
 
+$resolveRules = [];
+$content2Ip = getenv('IMAGE_PROXY_CONTENT2_IP');
+if (!is_string($content2Ip) || trim($content2Ip) === '') {
+    $content2Ip = '172.20.82.86';
+}
+if (trim($content2Ip) !== '') {
+    // Optional DNS override for environments where host DNS is broken.
+    $resolveRules[] = $allowedHost . ':' . $allowedPort . ':' . trim($content2Ip);
+}
+
 curl_setopt_array($ch, [
     CURLOPT_RETURNTRANSFER => true,
     CURLOPT_FOLLOWLOCATION => false,
     CURLOPT_CONNECTTIMEOUT => 5,
     CURLOPT_TIMEOUT => 15,
     CURLOPT_HTTPHEADER => ['Accept: image/*,*/*;q=0.8'],
+    CURLOPT_RESOLVE => $resolveRules,
 ]);
 
 $body = curl_exec($ch);
