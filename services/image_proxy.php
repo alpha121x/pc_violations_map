@@ -6,6 +6,7 @@ header('X-Content-Type-Options: nosniff');
 header('Cache-Control: public, max-age=300');
 
 $rawUrl = $_GET['url'] ?? '';
+$debug = isset($_GET['debug']) && $_GET['debug'] === '1';
 if ($rawUrl === '') {
     http_response_code(400);
     echo 'Missing url parameter.';
@@ -43,8 +44,7 @@ if ($ch === false) {
 
 curl_setopt_array($ch, [
     CURLOPT_RETURNTRANSFER => true,
-    CURLOPT_FOLLOWLOCATION => true,
-    CURLOPT_MAXREDIRS => 2,
+    CURLOPT_FOLLOWLOCATION => false,
     CURLOPT_CONNECTTIMEOUT => 5,
     CURLOPT_TIMEOUT => 15,
     CURLOPT_HTTPHEADER => ['Accept: image/*,*/*;q=0.8'],
@@ -53,15 +53,32 @@ curl_setopt_array($ch, [
 $body = curl_exec($ch);
 $status = (int) curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
 $contentType = (string) curl_getinfo($ch, CURLINFO_CONTENT_TYPE);
+$effectiveUrl = (string) curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
+$errno = curl_errno($ch);
 $err = curl_error($ch);
 curl_close($ch);
 
 if ($body === false || $status < 200 || $status >= 300) {
     http_response_code(502);
-    echo 'Failed to fetch image.';
-    if ($err !== '') {
-        error_log('image_proxy error: ' . $err);
+    header('Content-Type: application/json');
+    $payload = [
+        'error' => 'Failed to fetch image.',
+        'upstream_status' => $status,
+        'curl_errno' => $errno,
+    ];
+    if ($debug) {
+        $payload['upstream_url'] = $decodedUrl;
+        $payload['effective_url'] = $effectiveUrl;
+        $payload['curl_error'] = $err;
     }
+    error_log(
+        'image_proxy fetch failed'
+        . ' upstream=' . $decodedUrl
+        . ' status=' . $status
+        . ' errno=' . $errno
+        . ' error=' . $err
+    );
+    echo json_encode($payload);
     exit;
 }
 
