@@ -152,6 +152,13 @@ require([
     },
   });
 
+  const dayWiseBlocksLayer = new FeatureLayer({
+    url: "https://map3.urbanunit.gov.pk:6443/arcgis/rest/services/Punjab/PB_Price_Pop_Blocks_Price_Violations_8432_27022026/MapServer/5",
+    title: "Day Wise Blocks",
+    outFields: ["*"],
+    popupEnabled: true,
+  });
+
   // =============================
   // BOUNDARIES (MapImageLayer)
   // =============================
@@ -175,6 +182,7 @@ require([
       populationBlockLayer, // move ABOVE polygons
       shopsLayer,
       districtHighlightLayer,
+      dayWiseBlocksLayer,
     ],
   });
 
